@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html ng-app="listaTelefonica">
+  <head>
+    <meta charset="utf-8">
+    <title>Lista Telefônica</title>
+    <link rel="stylesheet" href="lib/bootstrap/bootstrap.css">
+    <style media="screen">
+      .jumbotron {
+        width: 400px;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        padding: 30px;
+      }
+      .table {
+        margin-top: 20px;
+      }
+      th {
+        text-align: center;
+      }
+      .form-control {
+        margin-bottom: 5px;
+      }
+      .selecionado {
+        background: yellow;
+      }
+      .negrito {
+        font-weight: bold;
+      }
+    </style>
+    <!--<script src="../../Bootstrap/bootstrap-3.3.7-dist/js/bootstrap.js"></script>-->
+    <script src="lib/angular/angular.js"></script>
+    <script>
+      //importa o modulo do projeto
+      angular.module("listaTelefonica", []);
+      //importa o modulo controller
+      angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope) {
+        $scope.app = "Lista Telefônica" //app recebe string
+        $scope.contatos = [ //declaração de array
+          {nome:"Pedro", telefone:"99998888"},
+          {nome:"Ana", telefone:"99998877"},
+          {nome:"Maria", telefone:"99998866"}
+        ];
+        $scope.operadoras = [
+          {nome:"Oi", cod:"14", categoria:"celular"},
+          {nome:"Vivo", cod:"15", categoria:"celular"},
+          {nome:"Tim", cod:"41", categoria:"celular"},
+          {nome:"GVT", cod:"25", categoria:"fixo"},
+          {nome:"Embratel", cod:"21", categoria:"fixo"}
+        ];
+        $scope.adicionarContato = function(contato) { //adicionarContato aciona function
+          //para evitar ler o scope dentro do controller
+          $scope.contatos.push(angular.copy(contato)); //a cópia do contato sera inserido no array
+          delete $scope.contato; //o contato será deletado
+        };
+        $scope.apagarContatos = function() {
+          console.log($scope.contatos);
+        };
+
+      });
+    </script>
+  </head>
+
+  <body ng-controller="listaTelefonicaCtrl"> <!-- início do ng-controller -->
+    <div class="jumbotron">
+      <h3 ng-bind="app"></h3> <!-- valor de app passa para h3 -->
+      <table class="table">
+        <tr>
+          <th></th>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>Operadora</th>
+        </tr>
+        <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos"> <!-- for aprimorado em angular -->
+          <td><input type="checkbox" ng-model="contato.selecionado"></td>
+          <td>{{contato.nome}}</td>
+          <td>{{contato.telefone}}</td>
+          <td>{{contato.operadora.nome}}</td>
+        </tr>
+      </table>
+      <!-- ng-model recebe Adicionaro valor da view e passa para controller -->
+      <input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome"/>
+      <input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone"/>
+      <!-- ng-options usa um for aprimorado para adicionar os valores aos campos do select -->
+      <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+        <option value="">Selecione uma operadora</option>
+      </select>
+      <!-- ng-click aciona uma ação ao clicar -->
+      <button  class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Adicionar Contato</button>
+      <button  class="btn btn-danger btn-block" ng-click="apagarContatos()">Apagar Contato(s)</button>
+    </div>
+  </body>
+</html>
