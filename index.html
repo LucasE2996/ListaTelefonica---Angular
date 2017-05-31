@@ -38,9 +38,9 @@
       angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope) {
         $scope.app = "Lista Telefônica" //app recebe string
         $scope.contatos = [ //declaração de array
-          {nome:"Pedro", telefone:"99998888"},
-          {nome:"Ana", telefone:"99998877"},
-          {nome:"Maria", telefone:"99998866"}
+          {nome:"Pedro", telefone:"99998888", cor:"blue"},
+          {nome:"Ana", telefone:"99998877", cor:"red"},
+          {nome:"Maria", telefone:"99998866", cor:"yellow"}
         ];
         $scope.operadoras = [
           {nome:"Oi", cod:"14", categoria:"celular"},
@@ -54,8 +54,15 @@
           $scope.contatos.push(angular.copy(contato)); //a cópia do contato sera inserido no array
           delete $scope.contato; //o contato será deletado
         };
-        $scope.apagarContatos = function() {
-          console.log($scope.contatos);
+        $scope.apagarContatos = function(contatos) {
+          $scope.contatos = contatos.filter(function(contato){
+            if(!contato.selecionado) return contato;
+          });
+        };
+        $scope.isSelecionado = function (contatos) {
+          return contatos.some(function(contato){
+            return contato.selecionado;
+          });
         };
 
       });
@@ -65,18 +72,20 @@
   <body ng-controller="listaTelefonicaCtrl"> <!-- início do ng-controller -->
     <div class="jumbotron">
       <h3 ng-bind="app"></h3> <!-- valor de app passa para h3 -->
-      <table class="table">
+      <table class="table" ng-show="contatos.length > 0">
         <tr>
           <th></th>
           <th>Nome</th>
           <th>Telefone</th>
           <th>Operadora</th>
+          <th>Cor</th>
         </tr>
         <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos"> <!-- for aprimorado em angular -->
           <td><input type="checkbox" ng-model="contato.selecionado"></td>
           <td>{{contato.nome}}</td>
           <td>{{contato.telefone}}</td>
           <td>{{contato.operadora.nome}}</td>
+          <td><div style="width:20px;height:20px;border-radius:50%;" ng-style="{'background': contato.cor}"></div></td>
         </tr>
       </table>
       <!-- ng-model recebe Adicionaro valor da view e passa para controller -->
@@ -88,7 +97,8 @@
       </select>
       <!-- ng-click aciona uma ação ao clicar -->
       <button  class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Adicionar Contato</button>
-      <button  class="btn btn-danger btn-block" ng-click="apagarContatos()">Apagar Contato(s)</button>
+      <button  class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-show="isSelecionado(contatos)">Apagar Contato(s)</button>
     </div>
+    <div ng-include="'footer.html'"></div>
   </body>
 </html>
