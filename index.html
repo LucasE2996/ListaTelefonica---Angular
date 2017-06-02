@@ -88,15 +88,23 @@
           <td><div style="width:20px;height:20px;border-radius:50%;" ng-style="{'background': contato.cor}"></div></td>
         </tr>
       </table>
-      <!-- ng-model recebe Adicionaro valor da view e passa para controller -->
-      <input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome"/>
-      <input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone"/>
-      <!-- ng-options usa um for aprimorado para adicionar os valores aos campos do select -->
-      <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
-        <option value="">Selecione uma operadora</option>
-      </select>
+      É válido: {{contatoForm.$valid}}<br>
+      É invalido: {{contatoForm.$invalid}}<br>
+      <form name="contatoForm">
+        <!-- ng-model recebe Adicionaro valor da view e passa para controller -->
+        <input class="form-control" type="text" ng-model="contato.nome" name="nome" placeholder="Nome" ng-required="true"/>
+        <input class="form-control" type="text" ng-model="contato.telefone" name="telefone" placeholder="Telefone" ng-required="true"/>
+        <!-- ng-options usa um for aprimorado para adicionar os valores aos campos do select -->
+        <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+          <option value="">Selecione uma operadora</option>
+        </select>
+      </form>
+
+      <div class="alert alert-danger" ng-show="contatoForm.nome.$invalid">Preencha o nome!</div>
+      <div class="alert alert-danger" ng-show="contatoForm.telefone.$invalid">Preencha o telefone!</div>
+
       <!-- ng-click aciona uma ação ao clicar -->
-      <button  class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Adicionar Contato</button>
+      <button  class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="contatoForm.$invalid">Adicionar Contato</button>
       <button  class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-show="isSelecionado(contatos)">Apagar Contato(s)</button>
     </div>
     <div ng-include="'footer.html'"></div>
