@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="lib/bootstrap/bootstrap.css">
     <style media="screen">
       .jumbotron {
-        width: 400px;
+        width: 600px;
         text-align: center;
         margin-left: auto;
         margin-right: auto;
@@ -39,9 +39,9 @@
       angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope) {
         $scope.app = "Lista Telefônica" //app recebe string
         $scope.contatos = [ //declaração de array
-          {nome:"Pedro", telefone:"99998888", cor:"blue"},
-          {nome:"Ana", telefone:"99998877", cor:"red"},
-          {nome:"Maria", telefone:"99998866", cor:"yellow"}
+          {nome:"Pedro", telefone:"99998888", data: new Date(), cor:"blue", operadora:{nome:"Oi", cod:"14", categoria:"celular"}},
+          {nome:"Ana", telefone:"99998877", data: new Date(), cor:"red", operadora:{nome:"Oi", cod:"14", categoria:"celular"}},
+          {nome:"Maria", telefone:"99998866", data: new Date(), cor:"yellow", operadora:{nome:"Oi", cod:"14", categoria:"celular"}}
         ];
         $scope.operadoras = [
           {nome:"Oi", cod:"14", categoria:"celular"},
@@ -81,18 +81,17 @@
           <th>Telefone</th>
           <th>Operadora</th>
           <th>Cor</th>
+          <th>Data</th>
         </tr>
         <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos"> <!-- for aprimorado em angular -->
           <td><input type="checkbox" ng-model="contato.selecionado"></td>
-          <td>{{contato.nome}}</td>
+          <td>{{contato.nome | uppercase}}</td>
           <td>{{contato.telefone}}</td>
           <td>{{contato.operadora.nome}}</td>
           <td><div style="width:20px;height:20px;border-radius:50%;" ng-style="{'background': contato.cor}"></div></td>
+          <td>{{contato.data | date}}</td>
         </tr>
       </table>
-
-      É válido: {{contatoForm.$valid}}<br>
-      É invalido: {{contatoForm.$invalid}}<br>
 
       <form name="contatoForm">
         <!-- ng-model recebe Adicionaro valor da view e passa para controller -->
