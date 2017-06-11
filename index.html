@@ -36,10 +36,10 @@
       //importa o modulo do projeto
       angular.module("listaTelefonica", ["ngMessages"]);
       //importa o modulo controller
-      angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope) {
+      angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope, uppercaseFilter) {
         $scope.app = "Lista Telefônica" //app recebe string
         $scope.contatos = [ //declaração de array
-          {nome:"Pedro", telefone:"99998888", data: new Date(), cor:"blue", operadora:{nome:"Oi", cod:"14", categoria:"celular"}},
+          {nome: uppercaseFilter("Pedro"), telefone:"99998888", data: new Date(), cor:"blue", operadora:{nome:"Oi", cod:"14", categoria:"celular"}},
           {nome:"Ana", telefone:"99998877", data: new Date(), cor:"red", operadora:{nome:"Oi", cod:"14", categoria:"celular"}},
           {nome:"Maria", telefone:"99998866", data: new Date(), cor:"yellow", operadora:{nome:"Oi", cod:"14", categoria:"celular"}}
         ];
@@ -100,7 +100,7 @@
         </tr>
         <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao"> <!-- for aprimorado em angular -->
           <td><input type="checkbox" ng-model="contato.selecionado"></td>
-          <td>{{contato.nome | uppercase}}</td>
+          <td>{{contato.nome}}</td>
           <td>{{contato.telefone}}</td>
           <td>{{contato.operadora.nome}}</td>
           <td><div style="width:20px;height:20px;border-radius:50%;" ng-style="{'background': contato.cor}"></div></td>
