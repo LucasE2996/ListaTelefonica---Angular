@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="listaTelefonica">
   <head>
+
     <meta charset="utf-8">
     <title>Lista Telefônica</title>
     <link rel="stylesheet" href="lib/bootstrap/bootstrap.css">
@@ -36,27 +37,46 @@
       //importa o modulo do projeto
       angular.module("listaTelefonica", ["ngMessages"]);
       //importa o modulo controller
-      angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope, uppercaseFilter) {
+      angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function($scope, $http) {
         $scope.app = "Lista Telefônica" //app recebe string
-        $scope.contatos = [ //declaração de array
-          {nome: uppercaseFilter("Pedro"), telefone:"99998888", data: new Date(), cor:"blue", operadora:{nome:"Oi", cod:"14", categoria:"celular"}},
-          {nome:"Ana", telefone:"99998877", data: new Date(), cor:"red", operadora:{nome:"Oi", cod:"14", categoria:"celular"}},
-          {nome:"Maria", telefone:"99998866", data: new Date(), cor:"yellow", operadora:{nome:"Oi", cod:"14", categoria:"celular"}}
-        ];
-        $scope.operadoras = [
-          {nome:"Oi", cod:"14", categoria:"celular", preco:2},
-          {nome:"Vivo", cod:"15", categoria:"celular", preco:1},
-          {nome:"Tim", cod:"41", categoria:"celular", preco:4},
-          {nome:"GVT", cod:"25", categoria:"fixo", preco:1},
-          {nome:"Embratel", cod:"21", categoria:"fixo", preco:2}
-        ];
+        $scope.contatos = [];
+        $scope.operadoras = [];
 
-        // ADICIONA CONTATO AO VETOR CONTATOS
+        // CARREGA DATA DO JSON PARA contatos
+        var carregarContatos = function() {
+          $http.get("http://localhost:80/contatos.json").then( function (successCallback) {
+            $scope.contatos = successCallback.data; //obj retorna um objeto que contem data
+          }, function (errorCallback) {
+            $scope.message = "Erro ao carregar contatos! " + errorCallback.data;
+          });
+        };
+
+        // CARREGA DATA DO JSON PARA operadoras
+        var carregarOperadoras = function () {
+          $http.get("http://localhost:80/operadoras.json").then( function (successCallback) {
+            $scope.operadoras = successCallback.data;
+          }, function (errorCallback) {
+            $scope.message = "Erro ao carregar operadoras! " + errorCallback.data;
+          });
+        };
+
+        // ADICIONA contato AO VETOR contatos
         $scope.adicionarContato = function(contato) { //adicionarContato aciona function
-          //para evitar ler o scope dentro do controller
-          $scope.contatos.push(angular.copy(contato)); //a cópia do contato sera inserido no array
-          delete $scope.contato; //o contato será deletado
-          $scope.contatoForm.$setPristine();
+          contato.data = new Date();
+          // REALIZA O POST EM contatos, PASSANDO contato COMO OBJETO
+          // $http.post("http://localhost:80/contatos.json", contato).then( function (successCallback) {
+          $http({
+            method: 'POST',
+            url: 'http://localhost:80/contatos.json',
+            data: contato,
+            headers: {'Content-Type': 'application/json'}
+          }).then( function (successCallback) {
+            delete $scope.contato; //o contato será deletado
+            $scope.contatoForm.$setPristine();
+            carregarContatos(); // PODE SER RUIM EM PERFOMACE
+          }, function (errorCallback) {
+            $scope.message = "Erro ao postar " + errorCallback.data;
+          });
         };
 
         // APAGA CONTATOS SELECIONADOS DO VETOR CONTATOS
@@ -78,13 +98,21 @@
           $scope.criterioDeOrdenacao = campo;
           $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
         };
+
+        // CHAMADA PARA CARREGAR BACKEND
+        carregarContatos();
+        carregarOperadoras();
       });
+
+
     </script>
   </head>
 
   <body ng-controller="listaTelefonicaCtrl"> <!-- início do ng-controller -->
     <div class="jumbotron">
       <h3 ng-bind="app"></h3> <!-- valor de app passa para h3 -->
+
+      <div class="alert alert-danger">{{message}}</div> <!-- ERROR MESSAGE FROM BACKEND -->
 
       <!-- BUSCA ATRAVÉZ DO FILTER NO ng-repeat -->
       <input class="form-control" type="text" ng-model="criterioDeBusca" placeholder="Buscar" />
